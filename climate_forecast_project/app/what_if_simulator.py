@@ -5,11 +5,10 @@ import torch.nn as nn
 import joblib
 from sklearn.preprocessing import MinMaxScaler
 
-# --- Load dataset ---
 data_path = r"D:\game\climate_forecast_project\data\co2_monthly.csv"
 df = pd.read_csv(data_path, parse_dates=["date"])
 
-# --- Load trained model & scaler ---
+
 model_path = r"D:\game\climate_forecast_project\models\lstm_model.pt"
 scaler_path = r"D:\game\climate_forecast_project\models\scaler.pkl"
 
@@ -31,7 +30,6 @@ model = LSTMModel()
 model.load_state_dict(torch.load(model_path))
 model.eval()
 
-# --- Function: What-If CO2 forecast ---
 def what_if_forecast(last_seq, months=12, planting_change=0, cars_change=0):
     """
     last_seq: numpy array of last N months CO2 values
@@ -42,26 +40,21 @@ def what_if_forecast(last_seq, months=12, planting_change=0, cars_change=0):
     predictions = []
 
     for _ in range(months):
-        # Modify seq based on what-if scenario
-        # Apply small effects of planting and cars changes
-        adjustment = -0.02 * planting_change + 0.01 * cars_change  # effect coefficient
+    
+        adjustment = -0.02 * planting_change + 0.01 * cars_change 
         input_seq = torch.from_numpy((seq + adjustment).reshape(1, seq.shape[0], 1)).float()
         with torch.no_grad():
             pred_scaled = model(input_seq).numpy()
         pred_value = scaler.inverse_transform(pred_scaled.reshape(-1,1))[0,0]
         predictions.append(pred_value)
-        
-        # Update sequence: slide window
+     
         seq = np.append(seq[1:], scaler.transform([[pred_value]])[0,0])
     
     return predictions
 
-# --- Example usage ---
-# Last N months (used by LSTM)
 N = 12
 last_seq_scaled = scaler.transform(df["value"].values[-N:].reshape(-1,1)).flatten()
 
-# Example: plant 20% more trees, reduce cars by 10%
 future_co2 = what_if_forecast(last_seq_scaled, months=12, planting_change=20, cars_change=-10)
 
 print("Next 12 months CO2 forecast with scenario:")
