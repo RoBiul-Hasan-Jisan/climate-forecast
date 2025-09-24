@@ -13,6 +13,14 @@ st.set_page_config(page_title="🌍 Climate What-If Explorer", layout="wide")
 st.markdown("<h1 style='text-align:center;color:#2E8B57;'>🌿 Climate What-If Explorer</h1>", unsafe_allow_html=True)
 st.markdown("---")
 
+# --- Show current working directory and files for debugging ---
+st.write("Current working directory:", os.getcwd())
+st.write("Files here:", os.listdir())
+if not os.path.exists("data"):
+    st.warning("No 'data' folder found. Make sure you uploaded co2_monthly.csv into 'data/'")
+if not os.path.exists("models"):
+    st.warning("No 'models' folder found. Make sure you uploaded lstm_model.pt and scaler.pkl into 'models/'")
+
 # --- Load data & model ---
 @st.cache_data
 def load_data(path):
@@ -45,7 +53,7 @@ def load_model(model_path, scaler_path):
     model.eval()
     return model, scaler
 
-# --- Paths (relative for Streamlit Cloud / local) ---
+# --- Paths (relative for local and Streamlit Cloud) ---
 data_path = "data/co2_monthly.csv"
 model_path = "models/lstm_model.pt"
 scaler_path = "models/scaler.pkl"
@@ -88,11 +96,9 @@ st.subheader("📊 CO₂ Forecast Visualizer")
 fig, ax = plt.subplots(figsize=(12,6))
 months = np.arange(1, forecast_months+1)
 
-# Dynamic multicolor bars
 colors = sns.color_palette("rocket_r", forecast_months)
 bars = ax.bar(months, future_co2, color=colors, edgecolor='black', alpha=0.9)
 
-# Add circular markers with gradient sizes
 for i, bar in enumerate(bars):
     ax.plot(bar.get_x() + bar.get_width()/2, bar.get_height(), 'o',
             color='yellow', markersize=8 + i*0.7, alpha=0.8)
