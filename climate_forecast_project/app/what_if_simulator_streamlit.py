@@ -13,14 +13,6 @@ st.set_page_config(page_title="🌍 Climate What-If Explorer", layout="wide")
 st.markdown("<h1 style='text-align:center;color:#2E8B57;'>🌿 Climate What-If Explorer</h1>", unsafe_allow_html=True)
 st.markdown("---")
 
-# --- Show current working directory and files for debugging ---
-st.write("Current working directory:", os.getcwd())
-st.write("Files here:", os.listdir())
-if not os.path.exists("data"):
-    st.warning("No 'data' folder found. Make sure you uploaded co2_monthly.csv into 'data/'")
-if not os.path.exists("models"):
-    st.warning("No 'models' folder found. Make sure you uploaded lstm_model.pt and scaler.pkl into 'models/'")
-
 # --- Load data & model ---
 @st.cache_data
 def load_data(path):
@@ -53,10 +45,10 @@ def load_model(model_path, scaler_path):
     model.eval()
     return model, scaler
 
-# --- Paths (relative for local and Streamlit Cloud) ---
-data_path = "data/co2_monthly.csv"
-model_path = "models/lstm_model.pt"
-scaler_path = "models/scaler.pkl"
+# --- Paths (inside climate_forecast_project/) ---
+data_path = "climate_forecast_project/data/co2_monthly.csv"
+model_path = "climate_forecast_project/models/lstm_model.pt"
+scaler_path = "climate_forecast_project/models/scaler.pkl"
 
 df = load_data(data_path)
 model, scaler = load_model(model_path, scaler_path)
