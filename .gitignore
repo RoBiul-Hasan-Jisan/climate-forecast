@@ -3,3 +3,5 @@
 
 # Ignore model files
 climate_forecast_project/models/
+terra
+terra_env

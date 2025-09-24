@@ -1,0 +1,16 @@
+torch
+torchvision
+torchaudio
+streamlit
+torch
+torchvision
+torchaudio
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+numpy
+faiss-cpu
+joblib
+sentence-transformers
